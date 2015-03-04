@@ -1,0 +1,8 @@
+/.settings
+/target/
+/.project
+/.classpath
+/src/main/resources/rebel.xml
+/.idea/
+/*.iml
+/work/
