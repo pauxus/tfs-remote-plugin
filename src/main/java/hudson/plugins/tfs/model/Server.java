@@ -1,20 +1,6 @@
 package hudson.plugins.tfs.model;
 
 import com.microsoft.tfs.core.TFSConfigurationServer;
-import hudson.plugins.tfs.TfTool;
-import hudson.plugins.tfs.commands.ServerConfigurationProvider;
-import hudson.plugins.tfs.util.MaskedArgumentListBuilder;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.Reader;
-import java.net.URI;
-import java.net.URL;
-import java.security.CodeSource;
-import java.security.ProtectionDomain;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.microsoft.tfs.core.TFSTeamProjectCollection;
 import com.microsoft.tfs.core.httpclient.Credentials;
 import com.microsoft.tfs.core.httpclient.DefaultNTCredentials;
@@ -22,26 +8,24 @@ import com.microsoft.tfs.core.httpclient.UsernamePasswordCredentials;
 import com.microsoft.tfs.core.util.CredentialsUtils;
 import com.microsoft.tfs.core.util.URIUtils;
 import com.microsoft.tfs.util.Closable;
+import jenkins.plugins.tfslib.TfsSdkLibUser;
 
-public class Server implements ServerConfigurationProvider, Closable {
+import java.net.URI;
+
+public class Server extends TfsSdkLibUser implements Closable {
     
     private static final String nativeFolderPropertyName = "com.microsoft.tfs.jni.native.base-directory";
     private final String url;
     private final String userName;
     private final String userPassword;
-    private Workspaces workspaces;
-    private Map<String, Project> projects = new HashMap<String, Project>();
-    private final TfTool tool;
     private final TFSTeamProjectCollection tpc;
 
-    public Server(TfTool tool, String url, String username, String password) {
-        this.tool = tool;
+    public Server(String url, String username, String password) {
         this.url = url;
         this.userName = username;
         this.userPassword = password;
         final URI uri = URIUtils.newURI(url);
 
-        ensureNativeLibrariesConfigured();
         Credentials credentials = null;
         // In case no user name is provided and the current platform supports
         // default credentials, use default credentials
@@ -60,64 +44,11 @@ public class Server implements ServerConfigurationProvider, Closable {
         }
     }
 
-    static synchronized void ensureNativeLibrariesConfigured() {
-        final String nativeFolder = System.getProperty(nativeFolderPropertyName);
-        if (nativeFolder == null) {
-            final Class<TFSTeamProjectCollection> metaclass = TFSTeamProjectCollection.class;
-            final ProtectionDomain protectionDomain = metaclass.getProtectionDomain();
-            final CodeSource codeSource = protectionDomain.getCodeSource();
-            if (codeSource == null) {
-                // TODO: log that we were unable to determine the codeSource
-                return;
-            }
-            final URL location = codeSource.getLocation();
-            // inspired by http://hg.netbeans.org/main/file/default/openide.filesystems/src/org/openide/filesystems/FileUtil.java#l1992
-            final String u = location.toString();
-            URI locationUri;
-            if (u.startsWith("jar:file:") && u.endsWith("!/")) {
-                locationUri = URI.create(u.substring(4, u.length() - 2));
-            }
-            else if (u.startsWith("file:")) {
-                locationUri = URI.create(u);
-            }
-            else {
-                // TODO: log that we were unable to determine location from codeSource
-                return;
-            }
-            final File pathToJar = new File(locationUri);
-            final File pathToLibFolder = pathToJar.getParentFile();
-            final File pathToNativeFolder = new File(pathToLibFolder, "native");
-            System.setProperty(nativeFolderPropertyName, pathToNativeFolder.toString()); 
-        }
-    }
-
-    Server(String url) {
-        this(null, url, null, null);
-    }
-
-    public Project getProject(String projectPath) {
-        if (! projects.containsKey(projectPath)) {
-            projects.put(projectPath, new Project(this, projectPath));
-        }
-        return projects.get(projectPath);
-    }
-    
     public TFSTeamProjectCollection getTeamProjectCollection()
     {
         return this.tpc;
     }
     
-    public Workspaces getWorkspaces() {
-        if (workspaces == null) {
-            workspaces = new Workspaces(this);
-        }
-        return workspaces;
-    }
-    
-    public Reader execute(MaskedArgumentListBuilder arguments) throws IOException, InterruptedException {
-        return tool.execute(arguments.toCommandArray(), arguments.toMaskArray());
-    }
-
     public String getUrl() {
         return url;
     }
@@ -128,10 +59,6 @@ public class Server implements ServerConfigurationProvider, Closable {
 
     public String getUserPassword() {
         return userPassword;
-    }
-
-    public String getLocalHostname() throws IOException, InterruptedException {
-        return tool.getHostname();
     }
 
     public synchronized void close() {

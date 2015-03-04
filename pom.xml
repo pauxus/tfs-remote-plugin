@@ -1,4 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
@@ -8,41 +8,41 @@
 
   <artifactId>tfs-control</artifactId>
   <packaging>hpi</packaging>
-  <name>Team Foundation Server Plug-in</name>
+  <jobName>Team Foundation Server Plug-in</jobName>
   <version>0.1.0-SNAPSHOT</version>
-  
+
   <url>http://wiki.jenkins-ci.org/display/JENKINS/Team+Foundation+Server+Plugin</url>
   <licenses>
-    <license><name>MIT license</name><comments>All source code is under the MIT license.</comments></license>
+    <license><jobName>MIT license</jobName><comments>All source code is under the MIT license.</comments></license>
     <license>
-      <name>Microsoft Visual Studio Team Foundation Server 2012 Software Development Kit for Java license terms</name>
+      <jobName>Microsoft Visual Studio Team Foundation Server 2012 Software Development Kit for Java license terms</jobName>
       <url>http://download.microsoft.com/download/5/9/9/5993F89B-AEF0-4381-9CEE-D3D7BA9EA33B/license.html</url>
     </license>
     <license>
-      <name>
+      <jobName>
         Apache Commons Codec, Apache Commons Logging, Apache HttpClient, Apache Commons Lang, Apache log4j,
         and Apache ServiceMix are licensed by the Apache Foundation under the Apache License, Version 2.0.
-      </name>
+      </jobName>
       <url>http://www.apache.org/licenses/LICENSE-2.0</url>
     </license>
     <license>
-      <name>
+      <jobName>
         The Apache Foundation's Xerces Java Parser project is licensed by the
         Apache Foundation under the Apache License, Version 1.1.
-      </name>
+      </jobName>
       <url>http://www.apache.org/licenses/LICENSE-1.1</url>
     </license>
     <license>
-      <name>
+      <jobName>
         The Woodstox XML Processor and the StAX API are licensed by their authors under the Apache License, Version 2.0.
-      </name>
+      </jobName>
       <url>http://www.apache.org/licenses/LICENSE-2.0</url></license>
     <license>
-      <name>This product includes software from the Hypersonic SQL DB http://hsqldb.org/.</name>
+      <jobName>This product includes software from the Hypersonic SQL DB http://hsqldb.org/.</jobName>
       <url>http://www.hsqldb.org/web/hsqlLicense.html</url>
     </license>
     <license>
-      <name>This product includes software from the Cryptix project http://www.cryptix.org/.</name>
+      <jobName>This product includes software from the Cryptix project http://www.cryptix.org/.</jobName>
       <url>http://cryptix.org/LICENSE.TXT</url>
     </license>
   </licenses>
@@ -50,14 +50,14 @@
   <developers>
     <developer>
       <id>pauxus</id>
-      <name>Stephan Pauxberger</name>
+      <jobName>Stephan Pauxberger</jobName>
       <email>stephan@blackbuild.com</email>
       <timezone>+1</timezone>
     </developer>
   </developers>
   <!--<scm>-->
-    <!--<connection>scm:git:ssh://github.com/jenkinsci/tfs-plugin.git</connection>-->
-    <!--<developerConnection>scm:git:ssh://git@github.com/jenkinsci/tfs-plugin.git</developerConnection>-->
+  <!--<connection>scm:git:ssh://github.com/jenkinsci/tfs-plugin.git</connection>-->
+  <!--<developerConnection>scm:git:ssh://git@github.com/jenkinsci/tfs-plugin.git</developerConnection>-->
   <!--</scm>-->
 
   <distributionManagement>
@@ -77,89 +77,51 @@
         </configuration>
       </plugin>
       <plugin>
-	<groupId>org.codehaus.mojo</groupId>
-	<artifactId>animal-sniffer-maven-plugin</artifactId>
-	<version>1.7</version>
-	<configuration>
-	  <signature>
-	    <groupId>org.codehaus.mojo.signature</groupId>
-	    <artifactId>java15</artifactId>
-	    <version>1.0</version>
-	  </signature>
-	</configuration>
-	<executions>
-	  <execution>
-	    <id>java.1.5.check</id>
-	    <phase>verify</phase>
-	    <goals>
-	      <goal>check</goal>
-	    </goals>
-	  </execution>
-	</executions>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>animal-sniffer-maven-plugin</artifactId>
+        <version>1.7</version>
+        <configuration>
+          <signature>
+            <groupId>org.codehaus.mojo.signature</groupId>
+            <artifactId>java15</artifactId>
+            <version>1.0</version>
+          </signature>
+        </configuration>
+        <executions>
+          <execution>
+            <id>java.1.5.check</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
 
     </plugins>
   </build>
 
   <dependencies>
-    <!-- 
-      com.microsoft.tfs.sdk includes its dependencies inline, some of which conflict with those of jenkins-core.
-      We have to repeat dependencies here to make sure they are considered before those inside the TFS SDK.
-    -->
     <dependency>
-      <groupId>org.jenkins-ci.main</groupId>
-      <artifactId>jenkins-war</artifactId>
-      <version>1.436</version>
-      <type>war</type>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jenkins-ci.main</groupId>
-      <artifactId>jenkins-core</artifactId>
-      <version>1.436</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jenkins-ci.main</groupId>
-      <artifactId>jenkins-test-harness</artifactId>
-      <version>1.436</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jenkins-ci.main</groupId>
-      <artifactId>ui-samples-plugin</artifactId>
-      <version>1.436</version>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>com.microsoft.tfs.sdk</groupId>
-      <artifactId>com.microsoft.tfs.sdk</artifactId>
-      <version>12.0.2</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/com.microsoft.tfs.sdk-12.0.2.jar</systemPath>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.12</version>
-      <scope>test</scope>
+      <groupId>org.jenkins-ci.plugins</groupId>
+      <artifactId>tfs-lib-plugin</artifactId>
+      <version>12.0.2-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
-    <repositories>
-        <repository>
-            <id>repo.jenkins-ci.org</id>
-            <url>http://repo.jenkins-ci.org/public/</url>
-        </repository>
-    </repositories>
+  <repositories>
+    <repository>
+      <id>repo.jenkins-ci.org</id>
+      <url>http://repo.jenkins-ci.org/public/</url>
+    </repository>
+  </repositories>
 
-    <pluginRepositories>
-        <pluginRepository>
-            <id>repo.jenkins-ci.org</id>
-            <url>http://repo.jenkins-ci.org/public/</url>
-        </pluginRepository>
-    </pluginRepositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>repo.jenkins-ci.org</id>
+      <url>http://repo.jenkins-ci.org/public/</url>
+    </pluginRepository>
+  </pluginRepositories>
 </project>  
   
 

@@ -24,6 +24,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.URI;
 
 /**
  * Created by snpaux on 03.03.2015.
@@ -52,7 +53,7 @@ public class TFSBuilder extends Builder {
         Server server = null;
 
         try {
-            server = new Server(null, url, username, password);
+            server = new Server(url, username, password);
 
             TSWAHyperlinkBuilder hyperlinkBuilder = new TSWAHyperlinkBuilder(server.getTeamProjectCollection());
                     
@@ -69,8 +70,13 @@ public class TFSBuilder extends Builder {
             IBuildDetail buildDetail = tfsBuild.getBuild();
             buildDetail.refresh(new String[] {"*"}, QueryOptions.NONE);
 
-            log.println("(" + HyperlinkNote.encodeTo(hyperlinkBuilder.getViewBuildDetailsURL(buildDetail.getURI()).toString(), buildDetail.getBuildNumber()) + ")");
+            URI detailsURL = hyperlinkBuilder.getViewBuildDetailsURL(buildDetail.getURI());
+            log.println("(" + HyperlinkNote.encodeTo(detailsURL.toString(), buildDetail.getBuildNumber()) + ")");
 
+
+            TFSJobLinkAction linkAction = new TFSJobLinkAction(detailsURL.toString(), buildDetail.getBuildNumber(), BuildStatus.IN_PROGRESS);
+            build.addAction(linkAction);
+            
             waitForCompletion(build, log, tfsBuild);
 
             // Display the status of the completed build.
@@ -80,6 +86,8 @@ public class TFSBuilder extends Builder {
             BuildInformationPrinter.printInformationToStream(buildDetail.getInformation(), log);
             
             log.println("Build " + buildDetail.getBuildNumber() + " completed with status " + tfsBuild.getBuildServer().getDisplayText(buildStatus));
+
+            linkAction.setStatus(buildStatus);
             
             if (buildStatus.equals(BuildStatus.STOPPED)) {
                 throw new InterruptedException("The TFS build has been aborted on TFS side");
@@ -131,6 +139,46 @@ public class TFSBuilder extends Builder {
             build.setResult(Result.ABORTED);
             throw e;
         }
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getTeamProject() {
+        return teamProject;
+    }
+
+    public void setTeamProject(String teamProject) {
+        this.teamProject = teamProject;
+    }
+
+    public String getBuildDefinition() {
+        return buildDefinition;
+    }
+
+    public void setBuildDefinition(String buildDefinition) {
+        this.buildDefinition = buildDefinition;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     @Extension
