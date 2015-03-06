@@ -8,41 +8,41 @@
 
   <artifactId>tfs-control</artifactId>
   <packaging>hpi</packaging>
-  <jobName>Team Foundation Server Plug-in</jobName>
+  <name>Team Foundation Server Plug-in</name>
   <version>0.1.0-SNAPSHOT</version>
 
   <url>http://wiki.jenkins-ci.org/display/JENKINS/Team+Foundation+Server+Plugin</url>
   <licenses>
-    <license><jobName>MIT license</jobName><comments>All source code is under the MIT license.</comments></license>
+    <license><name>MIT license</name><comments>All source code is under the MIT license.</comments></license>
     <license>
-      <jobName>Microsoft Visual Studio Team Foundation Server 2012 Software Development Kit for Java license terms</jobName>
+      <name>Microsoft Visual Studio Team Foundation Server 2012 Software Development Kit for Java license terms</name>
       <url>http://download.microsoft.com/download/5/9/9/5993F89B-AEF0-4381-9CEE-D3D7BA9EA33B/license.html</url>
     </license>
     <license>
-      <jobName>
+      <name>
         Apache Commons Codec, Apache Commons Logging, Apache HttpClient, Apache Commons Lang, Apache log4j,
         and Apache ServiceMix are licensed by the Apache Foundation under the Apache License, Version 2.0.
-      </jobName>
+      </name>
       <url>http://www.apache.org/licenses/LICENSE-2.0</url>
     </license>
     <license>
-      <jobName>
+      <name>
         The Apache Foundation's Xerces Java Parser project is licensed by the
         Apache Foundation under the Apache License, Version 1.1.
-      </jobName>
+      </name>
       <url>http://www.apache.org/licenses/LICENSE-1.1</url>
     </license>
     <license>
-      <jobName>
+      <name>
         The Woodstox XML Processor and the StAX API are licensed by their authors under the Apache License, Version 2.0.
-      </jobName>
+      </name>
       <url>http://www.apache.org/licenses/LICENSE-2.0</url></license>
     <license>
-      <jobName>This product includes software from the Hypersonic SQL DB http://hsqldb.org/.</jobName>
+      <name>This product includes software from the Hypersonic SQL DB http://hsqldb.org/.</name>
       <url>http://www.hsqldb.org/web/hsqlLicense.html</url>
     </license>
     <license>
-      <jobName>This product includes software from the Cryptix project http://www.cryptix.org/.</jobName>
+      <name>This product includes software from the Cryptix project http://www.cryptix.org/.</name>
       <url>http://cryptix.org/LICENSE.TXT</url>
     </license>
   </licenses>
@@ -50,7 +50,7 @@
   <developers>
     <developer>
       <id>pauxus</id>
-      <jobName>Stephan Pauxberger</jobName>
+      <name>Stephan Pauxberger</name>
       <email>stephan@blackbuild.com</email>
       <timezone>+1</timezone>
     </developer>

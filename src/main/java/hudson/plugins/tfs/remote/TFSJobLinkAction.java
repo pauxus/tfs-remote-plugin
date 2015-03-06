@@ -1,63 +1,48 @@
 package hudson.plugins.tfs.remote;
 
-import com.microsoft.tfs.core.clients.build.flags.BuildStatus;
 import hudson.model.Action;
-import hudson.plugins.tfs.util.ImageUtil;
+import hudson.model.Result;
 import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.export.ExportedBean;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * Created by snpaux on 04.03.2015.
- */
+@ExportedBean(defaultVisibility = 2)
 public class TFSJobLinkAction implements Action, Serializable {
 
-    private String uri;
-
-    private String jobName;
-    private BuildStatus status;
+    private List<TFSBuildResult> buildResults = new ArrayList<TFSBuildResult>();
     
-    public TFSJobLinkAction(String uri, String jobName, BuildStatus status) {
-        this.uri = uri;
-        this.jobName = jobName;
-        this.status = status;
-    }
-
-    @Exported
-    public String getUri() {
-        return uri;
-    }
-
-    public void setUri(String uri) {
-        this.uri = uri;
-    }
-
-    public BuildStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(BuildStatus status) {
-        this.status = status;
-    }
-
-    @Exported
-    public String getJobName() {
-        return jobName;
-    }
-
-    public void setJobName(String jobName) {
-        this.jobName = jobName;
-    }
-
     public String getIconFileName() {
-        return ImageUtil.getImageForStatus(status);
+        return null;
     }
 
     public String getDisplayName() {
         return "Executed TFS Build";
     }
 
+    @Exported
     public String getUrlName() {
-        return uri;
+        return null;  // no special page yet
+    }
+
+    @Exported
+    public List<TFSBuildResult> getBuildResults() {
+        return buildResults;
+    }
+    
+    public Result getCombinedStatus() {
+        Result result = Result.SUCCESS;
+        
+        for (TFSBuildResult buildResult : buildResults) {
+            result = result.combine(buildResult.getResult());
+        }
+        
+        return result;
+    }
+
+    public void addBuildResult(TFSBuildResult buildResult) {
+        buildResults.add(buildResult);
     }
 }

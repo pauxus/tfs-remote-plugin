@@ -74,8 +74,15 @@ public class TFSBuilder extends Builder {
             log.println("(" + HyperlinkNote.encodeTo(detailsURL.toString(), buildDetail.getBuildNumber()) + ")");
 
 
-            TFSJobLinkAction linkAction = new TFSJobLinkAction(detailsURL.toString(), buildDetail.getBuildNumber(), BuildStatus.IN_PROGRESS);
-            build.addAction(linkAction);
+            TFSJobLinkAction linkAction = build.getAction(TFSJobLinkAction.class);
+            
+            if (linkAction == null) {
+                linkAction = new TFSJobLinkAction();
+                build.addAction(linkAction);
+            }
+            
+            TFSBuildResult buildResult = new TFSBuildResult(definition.getName(), buildDetail.getBuildNumber(), buildDetail.getURI(), detailsURL.toString(), BuildStatus.NONE);
+            linkAction.addBuildResult(buildResult);
             
             waitForCompletion(build, log, tfsBuild);
 
@@ -87,7 +94,7 @@ public class TFSBuilder extends Builder {
             
             log.println("Build " + buildDetail.getBuildNumber() + " completed with status " + tfsBuild.getBuildServer().getDisplayText(buildStatus));
 
-            linkAction.setStatus(buildStatus);
+            buildResult.setStatus(buildStatus);
             
             if (buildStatus.equals(BuildStatus.STOPPED)) {
                 throw new InterruptedException("The TFS build has been aborted on TFS side");
