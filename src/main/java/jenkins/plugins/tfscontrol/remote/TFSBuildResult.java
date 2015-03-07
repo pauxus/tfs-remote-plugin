@@ -1,4 +1,4 @@
-package hudson.plugins.tfs.remote;
+package jenkins.plugins.tfscontrol.remote;
 
 import com.microsoft.tfs.core.clients.build.flags.BuildStatus;
 import hudson.model.Result;

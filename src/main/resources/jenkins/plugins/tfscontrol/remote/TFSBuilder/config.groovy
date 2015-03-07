@@ -1,4 +1,4 @@
-package hudson.plugins.tfs.remote.TFSBuilder
+package jenkins.plugins.tfscontrol.remote.TFSBuilder
 
 def f = namespace(lib.FormTagLib);
 

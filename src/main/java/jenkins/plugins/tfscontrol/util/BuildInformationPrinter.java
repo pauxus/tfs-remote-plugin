@@ -1,4 +1,4 @@
-package hudson.plugins.tfs.util;
+package jenkins.plugins.tfscontrol.util;
 
 import com.microsoft.tfs.core.clients.build.IBuildInformation;
 import com.microsoft.tfs.core.clients.build.IBuildInformationNode;

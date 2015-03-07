@@ -1,4 +1,4 @@
-package hudson.plugins.tfs.model;
+package jenkins.plugins.tfscontrol.model;
 
 import com.microsoft.tfs.core.TFSConfigurationServer;
 import com.microsoft.tfs.core.TFSTeamProjectCollection;
@@ -8,13 +8,12 @@ import com.microsoft.tfs.core.httpclient.UsernamePasswordCredentials;
 import com.microsoft.tfs.core.util.CredentialsUtils;
 import com.microsoft.tfs.core.util.URIUtils;
 import com.microsoft.tfs.util.Closable;
-import jenkins.plugins.tfslib.TfsSdkLibUser;
+import jenkins.plugins.tfslib.TfsSdkLibAccess;
 
 import java.net.URI;
 
-public class Server extends TfsSdkLibUser implements Closable {
+public class Server extends TfsSdkLibAccess implements Closable {
     
-    private static final String nativeFolderPropertyName = "com.microsoft.tfs.jni.native.base-directory";
     private final String url;
     private final String userName;
     private final String userPassword;

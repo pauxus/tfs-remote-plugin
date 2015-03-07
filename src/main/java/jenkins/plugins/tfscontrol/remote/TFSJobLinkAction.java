@@ -1,4 +1,4 @@
-package hudson.plugins.tfs.remote;
+package jenkins.plugins.tfscontrol.remote;
 
 import hudson.model.Action;
 import hudson.model.Result;

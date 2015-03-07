@@ -1,6 +1,6 @@
-package hudson.plugins.tfs.remote.TFSJobLinkAction
+package jenkins.plugins.tfscontrol.remote.TFSJobLinkAction
 
-import hudson.plugins.tfs.remote.TFSBuildResult
+import jenkins.plugins.tfscontrol.remote.TFSBuildResult
 import lib.LayoutTagLib
 
 l=namespace(LayoutTagLib)

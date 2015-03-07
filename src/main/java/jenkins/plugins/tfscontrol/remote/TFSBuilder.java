@@ -1,4 +1,4 @@
-package hudson.plugins.tfs.remote;
+package jenkins.plugins.tfscontrol.remote;
 
 import com.microsoft.tfs.core.clients.build.IBuildDefinition;
 import com.microsoft.tfs.core.clients.build.IBuildDetail;
@@ -16,8 +16,8 @@ import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
 import hudson.model.Result;
-import hudson.plugins.tfs.model.Server;
-import hudson.plugins.tfs.util.BuildInformationPrinter;
+import jenkins.plugins.tfscontrol.model.Server;
+import jenkins.plugins.tfscontrol.util.BuildInformationPrinter;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import org.kohsuke.stapler.DataBoundConstructor;
