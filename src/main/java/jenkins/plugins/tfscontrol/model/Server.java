@@ -12,6 +12,11 @@ import jenkins.plugins.tfslib.TfsSdkLibAccess;
 
 import java.net.URI;
 
+/**
+ * This class is based on the Server class of TFS Plugin for Jenkins.
+ * 
+ * Most part of this functionality should eventually be moved to tfs-lib plugin.
+ */
 public class Server extends TfsSdkLibAccess implements Closable {
     
     private final String url;
