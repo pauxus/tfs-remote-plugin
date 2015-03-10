@@ -89,6 +89,8 @@ public class TFSBuilder extends Builder {
             // Display the status of the completed build.
             buildDetail.refresh(new String[] {"*"}, QueryOptions.NONE);
             BuildStatus buildStatus = buildDetail.getStatus();
+            
+            buildResult.setDropLocation(buildDetail.getDropLocation());
 
             BuildInformationPrinter.printInformationToStream(buildDetail.getInformation(), log);
             

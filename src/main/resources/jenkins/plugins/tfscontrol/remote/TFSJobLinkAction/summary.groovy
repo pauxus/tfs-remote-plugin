@@ -12,7 +12,12 @@ t.summary(icon: my.combinedStatus.color.image) {
     h3("Executed TFS Jobs")
     ul {
         my.buildResults.each { TFSBuildResult tfsJob ->
-            a(href: tfsJob.buildURL, tfsJob.buildName)
+            a(href: tfsJob.buildURL, target: '_blank', tfsJob.buildName)
+            if (tfsJob.dropLocation) {
+                raw '(Droplocation: '
+                a(href: "file:///$tfsJob.dropLocation", target: '_blank', tfsJob.dropLocation)
+                raw ')'
+            }
         }
     }
 }

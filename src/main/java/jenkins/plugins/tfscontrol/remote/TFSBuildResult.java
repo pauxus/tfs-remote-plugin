@@ -24,6 +24,8 @@ public class TFSBuildResult implements Serializable {
     private String buildURL;
     
     private BuildStatus status;
+    
+    private String dropLocation;
 
     public TFSBuildResult(String buildDefinitionName, String buildName, String buildURI, String buildURL, BuildStatus status) {
         this.buildDefinitionName = buildDefinitionName;
@@ -91,5 +93,13 @@ public class TFSBuildResult implements Serializable {
 
     public void setStatus(BuildStatus status) {
         this.status = status;
+    }
+
+    public String getDropLocation() {
+        return dropLocation;
+    }
+
+    public void setDropLocation(String dropLocation) {
+        this.dropLocation = dropLocation;
     }
 }
