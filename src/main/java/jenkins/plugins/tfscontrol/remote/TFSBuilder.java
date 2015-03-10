@@ -46,6 +46,8 @@ public class TFSBuilder extends Builder {
         this.password = password;
     }
 
+    
+    
     @Override
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
         PrintStream log = listener.getLogger();
@@ -91,7 +93,7 @@ public class TFSBuilder extends Builder {
             BuildStatus buildStatus = buildDetail.getStatus();
             
             buildResult.setDropLocation(buildDetail.getDropLocation());
-
+            
             BuildInformationPrinter.printInformationToStream(buildDetail.getInformation(), log);
             
             log.println("Build " + buildDetail.getBuildNumber() + " completed with status " + tfsBuild.getBuildServer().getDisplayText(buildStatus));
