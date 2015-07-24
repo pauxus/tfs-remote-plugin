@@ -6,6 +6,7 @@ import hudson.model.Result;
 import java.io.Serializable;
 import java.net.URI;
 
+@SuppressWarnings("unused")
 public class TFSBuildResult implements Serializable {
 
     private final static int IN_PROGRESS = 1;

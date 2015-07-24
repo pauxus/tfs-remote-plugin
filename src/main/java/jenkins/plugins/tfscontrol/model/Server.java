@@ -17,6 +17,7 @@ import java.net.URI;
  * 
  * Most part of this functionality should eventually be moved to tfs-lib plugin.
  */
+@SuppressWarnings("unused")
 public class Server extends TfsSdkLibAccess implements Closable {
     
     private final String url;

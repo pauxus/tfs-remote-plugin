@@ -26,9 +26,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URI;
 
-/**
- * Created by snpaux on 03.03.2015.
- */
+@SuppressWarnings("unused")
 public class TFSBuilder extends Builder {
     
     private String url;
@@ -46,8 +44,6 @@ public class TFSBuilder extends Builder {
         this.password = password;
     }
 
-    
-    
     @Override
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
         PrintStream log = listener.getLogger();
@@ -109,11 +105,12 @@ public class TFSBuilder extends Builder {
             }
             
             if (buildStatus.equals(BuildStatus.PARTIALLY_SUCCEEDED)) {
-                build.setResult(build.getResult().combine(Result.UNSTABLE));
+                Result oldResult = build.getResult();
+                build.setResult(oldResult == null ? Result.UNSTABLE : build.getResult().combine(Result.UNSTABLE));
             }
             
         } finally {
-            server.close();
+            if (server != null) server.close();
         }
 
         return true;
