@@ -120,6 +120,7 @@ public class TFSBuilder extends Builder {
 
         IBuildDetail buildDetail = tfsBuild.getBuild();
         while (!tfsBuild.getStatus().equals(QueueStatus.COMPLETED) && buildDetail.getStatus().equals(BuildStatus.NOT_STARTED)) {
+            System.out.println("Current status:" + tfsBuild.getStatus().toIntFlags());
             Thread.sleep(2000);
             tfsBuild.refresh(QueryOptions.NONE);
             buildDetail.refresh(new String[] {"GetStatus"}, QueryOptions.NONE);
