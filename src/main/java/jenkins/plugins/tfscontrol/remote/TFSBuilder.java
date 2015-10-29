@@ -119,7 +119,11 @@ public class TFSBuilder extends Builder {
     private void waitForJobStart(IQueuedBuild tfsBuild) throws InterruptedException {
 
         IBuildDetail buildDetail = tfsBuild.getBuild();
-        while (!tfsBuild.getStatus().equals(QueueStatus.COMPLETED) && buildDetail.getStatus().equals(BuildStatus.NOT_STARTED)) {
+        while (
+                tfsBuild.getStatus() == null
+                        || buildDetail == null
+                        || buildDetail.getStatus() == null
+                        || (!tfsBuild.getStatus().equals(QueueStatus.COMPLETED) && buildDetail.getStatus().equals(BuildStatus.NOT_STARTED))) {
             System.out.println("Current status:" + tfsBuild.getStatus().toIntFlags());
             Thread.sleep(2000);
             tfsBuild.refresh(QueryOptions.NONE);
