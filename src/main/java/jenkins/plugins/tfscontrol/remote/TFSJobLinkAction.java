@@ -53,8 +53,5 @@ public class TFSJobLinkAction implements EnvironmentContributingAction, Serializ
 
     public void buildEnvVars(AbstractBuild<?, ?> build, EnvVars env) {
         int counter = 1;
-        for (TFSBuildResult buildResult : buildResults) {
-            env.put("TFS_DROPLOCATION_" + counter, buildResult.getDropLocation());
-        }
     }
 }

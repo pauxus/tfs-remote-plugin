@@ -13,11 +13,6 @@ t.summary(icon: my.combinedStatus.color.image) {
     ul {
         my.buildResults.each { TFSBuildResult tfsJob ->
             a(href: tfsJob.buildURL, target: '_blank', tfsJob.buildName)
-            if (tfsJob.dropLocation) {
-                raw '(Droplocation: '
-                a(href: "file:///$tfsJob.dropLocation", target: '_blank', tfsJob.dropLocation)
-                raw ')'
-            }
         }
     }
 }

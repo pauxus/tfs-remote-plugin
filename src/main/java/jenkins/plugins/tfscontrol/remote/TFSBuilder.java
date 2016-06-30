@@ -1,13 +1,8 @@
 package jenkins.plugins.tfscontrol.remote;
 
-import com.microsoft.tfs.core.clients.build.IBuildDefinition;
-import com.microsoft.tfs.core.clients.build.IBuildDetail;
-import com.microsoft.tfs.core.clients.build.IBuildServer;
-import com.microsoft.tfs.core.clients.build.IQueuedBuild;
-import com.microsoft.tfs.core.clients.build.flags.BuildStatus;
-import com.microsoft.tfs.core.clients.build.flags.QueryOptions;
-import com.microsoft.tfs.core.clients.build.flags.QueueStatus;
-import com.microsoft.tfs.core.util.TSWAHyperlinkBuilder;
+import com.blackbuild.tfs.rest.api.TFSWrapperException;
+import com.blackbuild.tfs.rest.api.TfsConnection;
+import com.blackbuild.tfs.rest.api.builds.LiveBuild;
 import hudson.AbortException;
 import hudson.Extension;
 import hudson.Launcher;
@@ -16,15 +11,12 @@ import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
 import hudson.model.Result;
-import jenkins.plugins.tfscontrol.model.Server;
-import jenkins.plugins.tfscontrol.util.BuildInformationPrinter;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import java.io.IOException;
 import java.io.PrintStream;
-import java.net.URI;
 
 @SuppressWarnings("unused")
 public class TFSBuilder extends Builder {
@@ -48,29 +40,16 @@ public class TFSBuilder extends Builder {
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
         PrintStream log = listener.getLogger();
 
-        Server server = null;
-
         try {
-            server = new Server(url, username, password);
+            TfsConnection connection = new TfsConnection(url + "/" + teamProject + "/", username, password, "GfK");
 
-            TSWAHyperlinkBuilder hyperlinkBuilder = new TSWAHyperlinkBuilder(server.getTeamProjectCollection());
-                    
-            IBuildServer buildServer = server.getTeamProjectCollection().getBuildServer();
+            LiveBuild tfsBuild = new LiveBuild(connection, connection.queueBuild(buildDefinition).run());
 
-            IBuildDefinition definition = buildServer.getBuildDefinition(teamProject, buildDefinition);
+            log.println("Queueing " + HyperlinkNote.encodeTo(tfsBuild.getBuild().getDefinition().getLinks().get("web").get("href"), buildDefinition));
 
-            IQueuedBuild tfsBuild = buildServer.queueBuild(definition);
+            tfsBuild.waitForInProgress();
 
-            log.print("Starting a new TFS Build of: " + buildDefinition + " ");
-
-            waitForJobStart(tfsBuild);
-
-            IBuildDetail buildDetail = tfsBuild.getBuild();
-            buildDetail.refresh(new String[] {"*"}, QueryOptions.NONE);
-
-            URI detailsURL = hyperlinkBuilder.getViewBuildDetailsURL(buildDetail.getURI());
-            log.println("(" + HyperlinkNote.encodeTo(detailsURL.toString(), buildDetail.getBuildNumber()) + ")");
-
+            log.println("TFS Build is running: " + HyperlinkNote.encodeTo(tfsBuild.getBuild().getLinks().get("web").get("href"), tfsBuild.getBuild().getFullName()));
 
             TFSJobLinkAction linkAction = build.getAction(TFSJobLinkAction.class);
             
@@ -79,84 +58,36 @@ public class TFSBuilder extends Builder {
                 build.addAction(linkAction);
             }
             
-            TFSBuildResult buildResult = new TFSBuildResult(definition.getName(), buildDetail.getBuildNumber(), buildDetail.getURI(), detailsURL.toString(), BuildStatus.NONE);
+            TFSBuildResult buildResult = new TFSBuildResult(buildDefinition, tfsBuild.getBuild().getFullName(), tfsBuild.getBuild().getLinks().get("web").get("href"), tfsBuild.getBuild().getUrl(), null);
             linkAction.addBuildResult(buildResult);
-            
-            waitForCompletion(build, log, tfsBuild);
 
-            // Display the status of the completed build.
-            buildDetail.refresh(new String[] {"*"}, QueryOptions.NONE);
-            BuildStatus buildStatus = buildDetail.getStatus();
-            
-            buildResult.setDropLocation(buildDetail.getDropLocation());
-            
-            BuildInformationPrinter.printInformationToStream(buildDetail.getInformation(), log);
-            
-            log.println("Build " + buildDetail.getBuildNumber() + " completed with status " + tfsBuild.getBuildServer().getDisplayText(buildStatus));
+            tfsBuild.waitForCompletion();
 
-            buildResult.setStatus(buildStatus);
+            com.blackbuild.tfs.rest.api.model.Result result = tfsBuild.getBuild().getResult();
+            log.println("Build " + tfsBuild.getBuild().getBuildNumber() + " completed with status " + result);
+
+            buildResult.setBuildResult(result);
             
-            if (buildStatus.equals(BuildStatus.STOPPED)) {
+            if (result == com.blackbuild.tfs.rest.api.model.Result.canceled) {
                 throw new InterruptedException("The TFS build has been aborted on TFS side");
             }
-            
-            if (buildStatus.equals(BuildStatus.FAILED)) {
+
+            if (result == com.blackbuild.tfs.rest.api.model.Result.failed) {
                 throw new AbortException("The TFS Build failed");
             }
-            
-            if (buildStatus.equals(BuildStatus.PARTIALLY_SUCCEEDED)) {
+
+            if (result == com.blackbuild.tfs.rest.api.model.Result.partiallySucceeded) {
                 Result oldResult = build.getResult();
                 build.setResult(oldResult == null ? Result.UNSTABLE : build.getResult().combine(Result.UNSTABLE));
             }
             
-        } finally {
-            if (server != null) server.close();
+        } catch (com.mashape.unirest.http.exceptions.UnirestException e) {
+            throw new IOException(e);
+        } catch (TFSWrapperException e) {
+            throw new IOException(e);
         }
 
         return true;
-    }
-
-    private void waitForJobStart(IQueuedBuild tfsBuild) throws InterruptedException {
-
-        IBuildDetail buildDetail = tfsBuild.getBuild();
-        while (buildDetail == null) {
-            Thread.sleep(2000);
-            tfsBuild.refresh(QueryOptions.NONE);
-            buildDetail = tfsBuild.getBuild();
-        }
-
-        while (
-                tfsBuild.getStatus() == null
-                        || buildDetail.getStatus() == null
-                        || (!tfsBuild.getStatus().equals(QueueStatus.COMPLETED) && buildDetail.getStatus().equals(BuildStatus.NOT_STARTED))) {
-            System.out.println("Current status:" + tfsBuild.getStatus().toIntFlags());
-            Thread.sleep(2000);
-            tfsBuild.refresh(QueryOptions.NONE);
-            buildDetail.refresh(new String[] {"GetStatus"}, QueryOptions.NONE);
-        }
-    }
-
-    private void waitForCompletion(AbstractBuild<?, ?> build, PrintStream log, IQueuedBuild tfsBuild) throws InterruptedException {
-        try {
-            while (!tfsBuild.getStatus().equals(QueueStatus.COMPLETED)) {
-                Thread.sleep(2000);
-                tfsBuild.refresh(QueryOptions.NONE);
-            }
-        } catch (InterruptedException e) {
-            log.println("Build has been aborted, aborting TFS build as well...");
-
-            IBuildDetail buildDetail = tfsBuild.getBuild();
-            buildDetail.refresh(new String[] {"GetStatus"}, QueryOptions.NONE);
-            
-            if (buildDetail.getStatus().equals(BuildStatus.NOT_STARTED))
-                tfsBuild.cancel();
-            else
-                // build already started
-                tfsBuild.getBuildServer().stopBuilds(new IBuildDetail[] {buildDetail});
-
-            build.setResult(Result.ABORTED);
-            throw e;
-        }
     }
 
     public String getUrl() {

@@ -1,10 +1,9 @@
 package jenkins.plugins.tfscontrol.remote;
 
-import com.microsoft.tfs.core.clients.build.flags.BuildStatus;
-import hudson.model.Result;
+
+import com.blackbuild.tfs.rest.api.model.Result;
 
 import java.io.Serializable;
-import java.net.URI;
 
 @SuppressWarnings("unused")
 public class TFSBuildResult implements Serializable {
@@ -24,35 +23,29 @@ public class TFSBuildResult implements Serializable {
     
     private String buildURL;
     
-    private BuildStatus status;
+    private Result buildResult;
     
-    private String dropLocation;
-
-    public TFSBuildResult(String buildDefinitionName, String buildName, String buildURI, String buildURL, BuildStatus status) {
+    public TFSBuildResult(String buildDefinitionName, String buildName, String buildURI, String buildURL, Result result) {
         this.buildDefinitionName = buildDefinitionName;
         this.buildName = buildName;
         this.buildURI = buildURI;
         this.buildURL = buildURL;
-        this.status = status;
+        this.buildResult = result;
     }
 
-    public Result getResult() {
+    public hudson.model.Result getResult() {
 
-        switch (status.toIntFlags()) {
-            case IN_PROGRESS:
-                return Result.NOT_BUILT;
-            case SUCCEEDED:
-                return Result.SUCCESS;
-            case PARTIALLY_SUCCEEDED:
-                return Result.UNSTABLE;
-            case FAILED:
-                return Result.FAILURE;
-            case STOPPED:
-                return Result.ABORTED;
-            case NOT_STARTED:
-                return Result.NOT_BUILT;
+        switch (buildResult) {
+            case succeeded:
+                return hudson.model.Result.SUCCESS;
+            case partiallySucceeded:
+                return hudson.model.Result.UNSTABLE;
+            case failed:
+                return hudson.model.Result.FAILURE;
+            case canceled:
+                return hudson.model.Result.ABORTED;
             default:
-                return Result.NOT_BUILT;
+                return hudson.model.Result.NOT_BUILT;
         }
     }
 
@@ -72,8 +65,8 @@ public class TFSBuildResult implements Serializable {
         return buildURL;
     }
 
-    public BuildStatus getStatus() {
-        return status;
+    public Result getBuildResult() {
+        return buildResult;
     }
 
     public void setBuildDefinitionName(String buildDefinitionName) {
@@ -92,15 +85,8 @@ public class TFSBuildResult implements Serializable {
         this.buildURL = buildURL;
     }
 
-    public void setStatus(BuildStatus status) {
-        this.status = status;
+    public void setBuildResult(Result buildResult) {
+        this.buildResult = buildResult;
     }
 
-    public String getDropLocation() {
-        return dropLocation;
-    }
-
-    public void setDropLocation(String dropLocation) {
-        this.dropLocation = dropLocation;
-    }
 }
