@@ -3,6 +3,7 @@ package jenkins.plugins.tfscontrol.remote;
 import com.blackbuild.tfs.rest.api.TFSWrapperException;
 import com.blackbuild.tfs.rest.api.TfsConnection;
 import com.blackbuild.tfs.rest.api.builds.LiveBuild;
+import com.blackbuild.tfs.rest.api.model.BuildDefinition;
 import hudson.AbortException;
 import hudson.Extension;
 import hudson.Launcher;
@@ -45,7 +46,9 @@ public class TFSBuilder extends Builder {
 
             LiveBuild tfsBuild = new LiveBuild(connection, connection.queueBuild(buildDefinition).run());
 
-            log.println("Queueing " + HyperlinkNote.encodeTo(tfsBuild.getBuild().getDefinition().getLinks().get("web").get("href"), buildDefinition));
+            BuildDefinition definition = connection.getBuildDefinition(tfsBuild.getBuild().getDefinition()).run();
+
+            log.println("Queueing " + HyperlinkNote.encodeTo(definition.getLinks().get("web").get("href"), buildDefinition));
 
             tfsBuild.waitForInProgress();
 
