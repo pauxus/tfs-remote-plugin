@@ -61,7 +61,7 @@ public class TFSBuilder extends Builder {
                 build.addAction(linkAction);
             }
             
-            TFSBuildResult buildResult = new TFSBuildResult(buildDefinition, tfsBuild.getBuild().getFullName(), tfsBuild.getBuild().getLinks().get("web").get("href"), tfsBuild.getBuild().getUrl(), null);
+            TFSBuildResult buildResult = new TFSBuildResult(buildDefinition, tfsBuild.getBuild().getFullName(), tfsBuild.getBuild().getUri().toString(), tfsBuild.getBuild().getLinks().get("web").get("href"), null);
             linkAction.addBuildResult(buildResult);
 
             tfsBuild.waitForCompletion();

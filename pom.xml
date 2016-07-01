@@ -11,6 +11,11 @@
   <name>Team Foundation Server Plug-in</name>
   <version>0.1.0-SNAPSHOT</version>
 
+  <properties>
+    <tfs-rest-api.version>0.1-alpha7</tfs-rest-api.version>
+    <unirest-java.version>1.4.10-ntlm</unirest-java.version>
+  </properties>
+
   <url>http://wiki.jenkins-ci.org/display/JENKINS/Team+Foundation+Server+Plugin</url>
   <licenses>
     <license><name>MIT license</name><comments>All source code is under the MIT license.</comments></license>
@@ -83,12 +88,12 @@
     <dependency>
       <groupId>com.blackbuild.tfs.rest</groupId>
       <artifactId>tfs-rest-api</artifactId>
-      <version>0.1-alpha3</version>
+      <version>${tfs-rest-api.version}</version>
     </dependency>
     <dependency>
       <groupId>com.mashape.unirest</groupId>
       <artifactId>unirest-java</artifactId>
-      <version>1.4.10-ntlm</version>
+      <version>${unirest-java.version}</version>
     </dependency>
   </dependencies>
 
